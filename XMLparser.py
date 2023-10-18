@@ -1,24 +1,39 @@
 import xml.etree.ElementTree as ET
 
-# Define a sample XML string for parsing (you can also read from a file)
-xml_data = """
-<root>
-    <person>
-        <name>John</name>
-        <age>30</age>
-    </person>
-    <person>
-        <name>Alice</name>
-        <age>25</age>
-    </person>
-</root>
-"""
+# Specify the path to your XML file
+smallxml = 'small-dblp.xml'
+bigxml = 'big-dblp.xml'
 
-# Parse the XML data
-root = ET.fromstring(xml_data)
+# Parse the XML file
+tree = ET.parse(bigxml)
+root = tree.getroot()
 
-# Traverse and access elements and attributes
-for person in root.findall('person'):
-    name = person.find('name').text
-    age = person.find('age').text
-    print(f"Name: {name}, Age: {age}")
+def printTitleAndYearFor(root):
+    for article in root.findall('article'):
+        title = article.find('title').text
+        year = article.find('year').text
+        print(f"Title: {title}, Year: {year}")
+
+def printAuthorsPer(documentType, root):
+    for article in root.findall(documentType):
+        line = ""
+        authors = article.findall('author')
+        for author in authors:
+            line += f"{author.text}," 
+            #print(f"{author.text}", end=",")
+        append_to_file(line)
+        append_to_file("\n")
+        #print()
+
+def append_to_file(string_to_append):
+    file_name = "xmlparsed.txt"
+    with open(file_name, 'a') as file:
+        file.write(string_to_append)
+
+
+print("=========== articles ===========")
+printAuthorsPer('article', root)
+print("=========== proceedings ===========")
+printAuthorsPer('proceedings', root)
+print("=========== in proceedings ===========")
+printAuthorsPer('inproceedings', root)
