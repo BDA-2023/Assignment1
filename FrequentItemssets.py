@@ -1,5 +1,6 @@
 from collections import defaultdict
 from itertools import combinations
+from firstpass import FirstPass
 
 def find_frequent_author_groups(data, threshold):
     # Step 1: Initialize variables
@@ -10,7 +11,7 @@ def find_frequent_author_groups(data, threshold):
     # Step 2: Count occurrences of individual authors
     for publication in data:
         for author in publication:
-            authors_counts[frozenset([author])] += 1
+            authors_counts[author] += 1
 
     # Step 3: Generate frequent itemsets for larger group sizes
     while True:
@@ -30,16 +31,23 @@ def find_frequent_author_groups(data, threshold):
 
     return frequent_groups
 
+
 def generate_candidate_groups(authors_counts, k):
     """
     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k.
     """
-    candidates = set()
-    for group1 in authors_counts:
-        for group2 in authors_counts:
-            if len(group1.union(group2)) == k + 1:
-                candidates.add(group1.union(group2))
-    return candidates
+    authors = list(authors_counts)  # Convert to a list for indexing
+
+    # Generate combinations of k-sized groups
+    itertool = combinations(set(authors), k+1)
+    candidates = []
+
+    for group1, group2 in itertool:
+        new_candidate = set(group1).union(group2)
+        candidates.append(frozenset(new_candidate))
+
+    return set(candidates)
+
 
 def count_candidate_groups(data, candidate_groups):
     """
@@ -66,13 +74,10 @@ def prune_infrequent_groups(authors_counts, threshold):
     return new_authors_counts, frequent_groups
 
 # Example usage
-data = [
-    {"Author1", "Author2", "Author3"},
-    {"Author2", "Author3", "Author4"},
-    {"Author1", "Author2", "Author4"},
-    {"Author2", "Author3", "Author4"},
-]
+file_path = 'small-xmlparsed.txt'  # Replace with the path to your text file
+fp = FirstPass(file_path)
+fp.process_file()
 
-threshold = 2  # Adjust this threshold as needed
-frequent_groups = find_frequent_author_groups(data, threshold)
+support_threshold = 2  # Adjust this threshold as needed
+frequent_groups = find_frequent_author_groups(fp.data, support_threshold)
 print(frequent_groups)
