@@ -4,16 +4,13 @@ from firstpass import FirstPass
 import cProfile
 import time
 
-#TODO max frequency (threshold) vinden
-#TODO is authors_counts nodig -> kan je niet gewoon frequent_groups_k terug meegeven?
-#TODO generate_candidate_groups_k + count_candidate_groups -> 1 functie
 
 def find_frequent_author_groups(data, threshold):
     # Step 1: Initialize variables
     authors_counts = defaultdict(int)
     frequent_groups = {}  # To store frequent groups and their counts
     k = 1  # Initialize group size -> how many authors published together
-    max_k = 4 # max paired authors in a group to search for
+    max_k = 7 # max paired authors in a group to search for
 
     # Step 2: Count occurrences of individual authors
     for publication in data:
@@ -51,35 +48,17 @@ def generate_candidate_groups_k(authors_counts, k):
     """
     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k.
     """
-    frequent_groups = [group for group, count in authors_counts.items() if len(group) == k]
-    
     candidates = set()
-    
-    for i, group1 in enumerate(frequent_groups):
-        for group2 in frequent_groups[i+1:]:
+    group_keys = list(authors_counts.keys())
+    for i in range(len(group_keys)):
+        group1 = group_keys[i]
+        for j in range(i + 1, len(group_keys)):
+            group2 = group_keys[j]
             new_candidate = frozenset(group1).union(group2)
             if len(new_candidate) == k + 1:
                 candidates.add(new_candidate)
-    
     return candidates
 
-# def generate_candidate_groups(authors_counts, k):
-#     """
-#     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k.
-#     """
-#     authors = list(authors_counts)  # Convert to a list for indexing
-
-#     frequent_groups = set(frozenset({author}) for author in authors if authors_counts[author] >= k)
-
-#     candidates = set()
-    
-#     for group1 in frequent_groups:
-#         for group2 in frequent_groups:
-#             if len(group1.union(group2)) == k + 1:
-#                 new_candidate = frozenset(group1.union(group2))
-#                 candidates.add(new_candidate)
-
-#     return candidates
 
 def generate_candidate_groups(authors_counts, k):
     """
@@ -89,23 +68,6 @@ def generate_candidate_groups(authors_counts, k):
     # Generate combinations of k-sized groups without them being duplicates (e.g., AB = BA)
     candidates = list(combinations(authors, k + 1))
     return set(candidates)
-
-# def generate_candidate_groups(authors_counts, k):
-#     """
-#     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k.
-#     """
-#     authors = list(authors_counts)  # Convert to a list for indexing
-
-#     # Generate combinations of k-sized groups without them being duplicates AB = BA
-#     itertool = combinations(set(authors), k+1)
-#     candidates = []
-    
-#     for group1, group2 in itertool:
-#         new_candidate = set(group1).union(group2)
-#         print(new_candidate)
-#         candidates.append(frozenset(new_candidate))
-
-#     return set(candidates)
 
 
 def count_candidate_groups(data, candidate_groups):
@@ -119,6 +81,7 @@ def count_candidate_groups(data, candidate_groups):
             if frozenset(group).issubset(publication_authors):
                 authors_counts[group] += 1
     return authors_counts
+
 
 def prune_infrequent_groups(authors_counts, threshold):
     """
@@ -140,13 +103,14 @@ profile = cProfile.Profile()
 profile.enable()
 fp.process_file()
 profile.disable()
-profile.dump_stats("profile_FirstPass.prof")
+profile.dump_stats("profile_FirstPass_med.prof")
 
 support_threshold = 2  # threshold of how frequent a author needs to be at min.
 profile.enable()
 frequent_groups = find_frequent_author_groups(fp.data, support_threshold)
 profile.disable()
-profile.dump_stats("profile_SecondPass_k4s2.prof")
+profile.dump_stats("profile_SecondPass_k4s2_med.prof")
+# frequent_groups = find_most_frequent_groups(fp.data)
+# frequent_groups = find_frequent_author_groups(fp.data, support_threshold)
 print(frequent_groups)
-
 
