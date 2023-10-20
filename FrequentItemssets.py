@@ -6,31 +6,74 @@ def find_frequent_author_groups(data, threshold):
     # Step 1: Initialize variables
     authors_counts = defaultdict(int)
     frequent_groups = {}  # To store frequent groups and their counts
-    k = 1  # Initialize group size
+    k = 1  # Initialize group size -> how many authors published together
 
     # Step 2: Count occurrences of individual authors
     for publication in data:
         for author in publication:
             authors_counts[author] += 1
 
+    candidate_groups = generate_candidate_groups(authors_counts, k)
+
     # Step 3: Generate frequent itemsets for larger group sizes
     while True:
         # Step 3a: Generate candidate itemsets of size k + 1
-        candidate_groups = generate_candidate_groups(authors_counts, k)
+        if k > 1:
+            candidate_groups = generate_candidate_groups(authors_counts, k)
         if not candidate_groups:
             break
-
         # Step 3b: Count occurrences of candidate itemsets in the dataset
         authors_counts = count_candidate_groups(data, candidate_groups)
 
-        # Step 3c: Prune itemsets that do not meet the support threshold
+        # # # Step 3c: Prune itemsets that do not meet the support threshold
         authors_counts, frequent_groups_k = prune_infrequent_groups(authors_counts, threshold)
         frequent_groups.update(frequent_groups_k)
+        #TODO is authors_counts nodig -> kan je niet gewoon frequent_groups_k terug meegeven?
 
         k += 1
+        if k==4:
+            break
+    # print(len(candidate_groups))
+    # print(frequent_groups_k)
 
     return frequent_groups
 
+
+def generate_candidate_groups_k(authors_counts, k):
+    """
+    Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k.
+    """
+    frequent_groups = [group for group, count in authors_counts.items() if len(group) == k]
+    
+    candidates = set()
+    
+    for i, group1 in enumerate(frequent_groups):
+        for group2 in frequent_groups[i+1:]:
+            new_candidate = frozenset(group1).union(group2)
+            if len(new_candidate) == k + 1:
+                if k+1 == 3:
+                    print(new_candidate)
+                candidates.add(new_candidate)
+    
+    return candidates
+
+# def generate_candidate_groups(authors_counts, k):
+#     """
+#     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k.
+#     """
+#     authors = list(authors_counts)  # Convert to a list for indexing
+
+#     frequent_groups = set(frozenset({author}) for author in authors if authors_counts[author] >= k)
+
+#     candidates = set()
+    
+#     for group1 in frequent_groups:
+#         for group2 in frequent_groups:
+#             if len(group1.union(group2)) == k + 1:
+#                 new_candidate = frozenset(group1.union(group2))
+#                 candidates.add(new_candidate)
+
+#     return candidates
 
 def generate_candidate_groups(authors_counts, k):
     """
@@ -38,15 +81,29 @@ def generate_candidate_groups(authors_counts, k):
     """
     authors = list(authors_counts)  # Convert to a list for indexing
 
-    # Generate combinations of k-sized groups
-    itertool = combinations(set(authors), k+1)
-    candidates = []
-
-    for group1, group2 in itertool:
-        new_candidate = set(group1).union(group2)
-        candidates.append(frozenset(new_candidate))
-
+    # Generate combinations of k-sized groups without them being duplicates (e.g., AB = BA)
+    candidates = list(combinations(authors, k + 1))
+    if k+1 == 3:
+        print(candidates)
+    # print(candidates)
     return set(candidates)
+
+# def generate_candidate_groups(authors_counts, k):
+#     """
+#     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k.
+#     """
+#     authors = list(authors_counts)  # Convert to a list for indexing
+
+#     # Generate combinations of k-sized groups without them being duplicates AB = BA
+#     itertool = combinations(set(authors), k+1)
+#     candidates = []
+    
+#     for group1, group2 in itertool:
+#         new_candidate = set(group1).union(group2)
+#         print(new_candidate)
+#         candidates.append(frozenset(new_candidate))
+
+#     return set(candidates)
 
 
 def count_candidate_groups(data, candidate_groups):
@@ -57,7 +114,7 @@ def count_candidate_groups(data, candidate_groups):
     for publication in data:
         publication_authors = set(publication)
         for group in candidate_groups:
-            if group.issubset(publication_authors):
+            if frozenset(group).issubset(publication_authors):
                 authors_counts[group] += 1
     return authors_counts
 
@@ -78,6 +135,6 @@ file_path = 'small-xmlparsed.txt'  # Replace with the path to your text file
 fp = FirstPass(file_path)
 fp.process_file()
 
-support_threshold = 2  # Adjust this threshold as needed
+support_threshold = 4  # threshold of how frequent a author needs to be at min.
 frequent_groups = find_frequent_author_groups(fp.data, support_threshold)
 print(frequent_groups)

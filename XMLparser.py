@@ -5,7 +5,7 @@ smallxml = 'small-dblp.xml'
 bigxml = 'big-dblp.xml'
 
 # Parse the XML file
-tree = ET.parse(bigxml)
+tree = ET.parse(smallxml)
 root = tree.getroot()
 
 def printTitleAndYearFor(root):

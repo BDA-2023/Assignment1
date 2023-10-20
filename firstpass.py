@@ -1,8 +1,8 @@
 class FirstPass:
     def __init__(self, file_path):
         self.file_path = file_path
-        self.authors_translation_table = {}
-        self.authors_counts = {}
+        self.authors_translation_table = {} # index of authors_counts per author 
+        self.authors_counts = {} # number of occurences per author
         self.data = []
 
     def process_file(self):
@@ -42,4 +42,4 @@ class FirstPass:
 file_path = 'small-xmlparsed.txt'  # Replace with the path to your text file
 translator = FirstPass(file_path)
 translator.process_file()
-print(translator.data)
+# print(translator.data)
