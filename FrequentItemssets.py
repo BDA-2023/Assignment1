@@ -2,7 +2,11 @@ from collections import defaultdict
 from itertools import combinations
 from firstpass import FirstPass
 import cProfile
+import time
 
+#TODO max frequency (threshold) vinden
+#TODO is authors_counts nodig -> kan je niet gewoon frequent_groups_k terug meegeven?
+#TODO generate_candidate_groups_k + count_candidate_groups -> 1 functie
 
 def find_frequent_author_groups(data, threshold):
     # Step 1: Initialize variables
@@ -21,6 +25,7 @@ def find_frequent_author_groups(data, threshold):
     # Step 3: Generate frequent itemsets for larger group sizes
     while True:
         # Step 3a: Generate candidate itemsets of size k + 1
+        t0 = time.time()
         if k > 1:
             candidate_groups = generate_candidate_groups_k(authors_counts, k)
         if not candidate_groups:
@@ -31,12 +36,13 @@ def find_frequent_author_groups(data, threshold):
         # # # Step 3c: Prune itemsets that do not meet the support threshold
         authors_counts, frequent_groups_k = prune_infrequent_groups(authors_counts, threshold)
         frequent_groups = frequent_groups_k
-        #TODO is authors_counts nodig -> kan je niet gewoon frequent_groups_k terug meegeven?
 
+        t1 = time.time()
+        total = t1-t0
+        print(f"Time for k={k}: {total} seconds")
         k += 1
         if k==max_k:
             break
-
 
     return frequent_groups
 
@@ -110,7 +116,7 @@ def count_candidate_groups(data, candidate_groups):
     for publication in data:
         publication_authors = set(publication)
         for group in candidate_groups:
-            if frozenset(group).issubset(publication_authors):
+            if len(group) <= len(publication_authors) and frozenset(group).issubset(publication_authors):
                 authors_counts[group] += 1
     return authors_counts
 
