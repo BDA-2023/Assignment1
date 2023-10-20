@@ -116,7 +116,7 @@ def count_candidate_groups(data, candidate_groups):
     for publication in data:
         publication_authors = set(publication)
         for group in candidate_groups:
-            if len(group) <= len(publication_authors) and frozenset(group).issubset(publication_authors):
+            if frozenset(group).issubset(publication_authors):
                 authors_counts[group] += 1
     return authors_counts
 
