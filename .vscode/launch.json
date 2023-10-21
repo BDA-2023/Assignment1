@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "1000 print_time",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt"],
+            "justMyCode": true
+        },
+        {
+            "name": "3000 print_time",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt", "-f", "3000.txt"],
+            "justMyCode": true
+        },
+        {
+            "name": "10000 print_time",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt","-f","10000.txt","-s","5","-k","30"],
+            "justMyCode": true
+        }
+        ,
+        {
+            "name": "100000 print_time",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt","-f","100000.txt","-s","5","-k","100"],
+            "justMyCode": true
+        }
+    ]
+}
