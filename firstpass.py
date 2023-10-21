@@ -6,7 +6,7 @@ class FirstPass:
         #self.authors_translation_table = defaultdict(int) # index of authors_counts per author 
         self.data = []
 
-    def process_file(self, itemset_counts, max_articles = 20000):
+    def process_file(self, itemset_counts, max_articles = 100000):
         with open(self.file_path, 'r') as file:
             i = 0
             for line in file:

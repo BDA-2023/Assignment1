@@ -30,16 +30,34 @@
             "console": "integratedTerminal",
             "args": ["-pt","-f","10000.txt","-s","5","-k","30"],
             "justMyCode": true
-        }
-        ,
+        },
         {
             "name": "100000 print_time",
             "type": "python",
             "request": "launch",
             "program": "./apriori.py",
             "console": "integratedTerminal",
-            "args": ["-pt","-f","100000.txt","-s","5","-k","100"],
+            "args": ["-pt","-f","100000.txt","-s","10","-k","100"],
             "justMyCode": true
-        }
+        },
+        {
+            "name": "100000 print_time print_output",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt","-f","100000.txt","-s","10","-k","100", "-po"],
+            "justMyCode": true
+        },
+        {
+            "name": "6mil print_time",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt","-f","6milion.txt","-s","250","-k","300", "-ma", "7000000"],
+            "justMyCode": true
+        },
+
     ]
 }

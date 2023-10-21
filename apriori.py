@@ -6,6 +6,11 @@ import time
 import argparse
 import math
 
+"""
+TODO:
+- should you count more than the support? kinda seems stupid
+"""
+
 def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10):
     result_frequent_sets = []
     frequent_sets_k = [itemset for itemset, count in itemset_counts.items() if count >= support_threshold]
@@ -67,7 +72,7 @@ def generate_candidate_groups_pruned(authors_from_article, frequent_sets_k, k):
     """
     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k that are only made from authors from current article.
     """
-    if (k < 6):# math.comb(len(authors_from_article), k) < len(frequent_sets_k)):
+    if (k < 5):# math.comb(len(authors_from_article), k) < len(frequent_sets_k)):
         authors = list(authors_from_article)  # Convert to a list for indexing
         # Generate combinations of k-sized groups without them being duplicates (e.g., AB = BA)
         possible_candidates = list(combinations(authors, k))
@@ -104,6 +109,7 @@ def parseArguments():
     parser.add_argument("-po", "--print_output", action="store_true", help="Print the final result")
     parser.add_argument("-f", "--file", type=str, default="1000.txt", help="The file which holds the authors for every article")
     parser.add_argument("-oc", "--optimized_candidates", action="store_true", help="Use the optimized version of candidates")
+    parser.add_argument("-ma", "--max_articles", type=int, default=100000, help="The maximum number of articles read from the current file")
 
 
     args = parser.parse_args()
@@ -130,14 +136,14 @@ def main():
     itemset_counts = defaultdict(int)
 
     profile.enable()
-    fp.process_file(itemset_counts)
+    fp.process_file(itemset_counts, args.max_articles)
     profile.disable()
-    profile.dump_stats("profiles/profile_FirstPass_20000.prof")
+    profile.dump_stats(f"profiles/profile_FirstPass_{args.max_articles}.prof")
 
     profile.enable()
     frequents = find_frequent_groups(fp.data, itemset_counts, args.support_threshold, args.max_k)
     profile.disable()
-    profile.dump_stats("profiles/profile_FindFrequents_20000_k<6.prof")
+    profile.dump_stats(f"profiles/profile_FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}_k<5.prof")
 
 if __name__ == "__main__":
     main()
