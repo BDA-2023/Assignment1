@@ -39,7 +39,7 @@ class FirstPass:
         pass  # You can add code to close the file here if needed
 
 # Example usage:
-file_path = 'small-xmlparsed.txt'  # Replace with the path to your text file
-translator = FirstPass(file_path)
-translator.process_file()
+# file_path = 'small-xmlparsed.txt'  # Replace with the path to your text file
+# translator = FirstPass(file_path)
+# translator.process_file()
 # print(translator.data)
