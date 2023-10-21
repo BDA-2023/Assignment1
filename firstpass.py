@@ -13,8 +13,7 @@ class FirstPass:
                     authors = self.get_authors_from_line(line)
                     self.data.append(authors)
                     self.build_authors_dict(authors)
-        #print(self.authors_translation_table)
-        pass
+        return 
 
     def get_authors_from_line(self, line):
         authors = line.split(",")
