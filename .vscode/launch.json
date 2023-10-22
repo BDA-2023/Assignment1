@@ -32,6 +32,15 @@
             "justMyCode": true
         },
         {
+            "name": "10000 print_time max_k=6",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt","-f","10000.txt","-s","5","-k","6"],
+            "justMyCode": true
+        },
+        {
             "name": "100000 print_time",
             "type": "python",
             "request": "launch",

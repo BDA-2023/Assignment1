@@ -25,6 +25,18 @@ stats = pstats.Stats("profiles/profile_FindFrequents_100000.txt_100000_k=100_s=1
 # Sort the results by cumulative time (you can choose other sorting options)
 stats.strip_dirs().sort_stats("cumulative").print_stats()
 
+stats = pstats.Stats("profiles/profile_FindFrequents_10000.txt_100000_k=6_s=5-2023-10-22 15:22:21.prof")
+# Sort the results by cumulative time (you can choose other sorting options)
+stats.strip_dirs().sort_stats("cumulative").print_stats()
+
+stats = pstats.Stats("profiles/profile_FindFrequents_10000.txt_100000_k=6_s=5-2023-10-22 15:35:57.prof")
+# Sort the results by cumulative time (you can choose other sorting options)
+stats.strip_dirs().sort_stats("cumulative").print_stats()
+
+stats = pstats.Stats("profiles/profile_FindFrequents_10000.txt_100000_k=6_s=5-2023-10-22 15:38:31.prof")
+# Sort the results by cumulative time (you can choose other sorting options)
+stats.strip_dirs().sort_stats("cumulative").print_stats()
+
 
 print("--------------------- 6milion ---------------------")
 stats = pstats.Stats("profiles/profile_FirstPass_7000000.prof")

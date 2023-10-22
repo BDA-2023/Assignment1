@@ -26,7 +26,7 @@ def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10
             t0 = time.time()
         # Count the support for each candidate set
         # print(f"frequent sets: {len(data)*len(frequent_sets_k)} \t({len(frequent_sets_k)}) \t- pow: {len(data)*pow(k,k)} \t(max {pow(k,k)}) - datalength:{len(data)}")
-        data = count_supports(data, itemset_counts, frequent_sets_k, k)
+        data = count_supports(data, itemset_counts, frequent_sets_k, len(frequent_sets_k), k)
         # Prune candidates with support below the minimum support threshold
         frequent_sets_k = [itemset for itemset, count in itemset_counts.items() if count >= support_threshold]
         itemset_counts = defaultdict(int)
@@ -51,7 +51,7 @@ def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10
         print(result_frequent_sets)
     return result_frequent_sets
 
-def count_supports(data, itemset_counts, frequent_sets_k, k):
+def count_supports(data, itemset_counts, frequent_sets_k, frequent_sets_size, k):
     pruned_data = []
     for authors_from_article in data:
         if len(authors_from_article) < k+1:
@@ -59,7 +59,7 @@ def count_supports(data, itemset_counts, frequent_sets_k, k):
         elif len(authors_from_article) == k+1:
             candidates_current_article = [frozenset(authors_from_article)]
         else: 
-            candidates_current_article = generate_candidate_groups_pruned(authors_from_article, frequent_sets_k, k)
+            candidates_current_article = generate_candidate_groups_pruned(authors_from_article, frequent_sets_k, frequent_sets_size, k)
 
             
         pruned_data.append(authors_from_article)
@@ -69,22 +69,32 @@ def count_supports(data, itemset_counts, frequent_sets_k, k):
     # print(f"pruned data length: {len(pruned_data)}")
     return pruned_data
 
-def generate_candidate_groups_pruned(authors_from_article, frequent_sets_k, k):
+def generate_candidate_groups_pruned(authors_from_article, frequent_sets_k, frequent_set_size, k):
     """
     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k that are only made from authors from current article.
     """
-    if (k < 5):# math.comb(len(authors_from_article), k) < len(frequent_sets_k)):
+    print(f"{math.comb(len(authors_from_article), k)} < {len(frequent_sets_k)}")
+    #if math.comb(len(authors_from_article), k) < frequent_set_size:
+    if (k < 5):
+        #print("going in")
         authors = list(authors_from_article)  # Convert to a list for indexing
         # Generate combinations of k-sized groups without them being duplicates (e.g., AB = BA)
         possible_candidates = list(combinations(authors, k))
         possible_candidates = frozenset([frozenset(x) for x in possible_candidates])
+        print(len(possible_candidates))
+
+        # author 1, author 2
+        # author 3
+        # 
 
         pruned_frequent_sets = []
         for candidate_set in possible_candidates:
             if candidate_set in frequent_sets_k:
                 pruned_frequent_sets.append(candidate_set)
+        #print(len(pruned_frequent_sets))
+        #print('-------')
     else:
-        #print(f"{len(authors_from_article)*k} < {len(frequent_sets_k)}")
+        # print(f"{len(authors_from_article)*k} < {len(frequent_sets_k)}")
         pruned_frequent_sets = frequent_sets_k
 
     candidates = generate_candidate_groups(pruned_frequent_sets, k)
@@ -146,7 +156,7 @@ def main():
     profile.enable()
     frequents = find_frequent_groups(fp.data, itemset_counts, args.support_threshold, args.max_k)
     profile.disable()
-    log_file_name = f"FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}_k<5"
+    log_file_name = f"FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}-{timestamp}"
     profile.dump_stats(f"profiles/profile_{log_file_name}.prof")
 
     write_log(original_stdout,timestamp,custom_stream, log_file_name)
