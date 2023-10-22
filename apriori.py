@@ -146,9 +146,10 @@ def main():
     profile.enable()
     frequents = find_frequent_groups(fp.data, itemset_counts, args.support_threshold, args.max_k)
     profile.disable()
-    profile.dump_stats(f"profiles/profile_FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}_k<5.prof")
+    log_file_name = f"FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}_k<5"
+    profile.dump_stats(f"profiles/profile_{log_file_name}.prof")
 
-    write_log(original_stdout,timestamp,custom_stream)
+    write_log(original_stdout,timestamp,custom_stream, log_file_name)
 
 if __name__ == "__main__":
     main()

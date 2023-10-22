@@ -35,7 +35,7 @@ def init_custom_stream():
 
     return original_stdout,timestamp,custom_stream
 
-def write_log(original_stdout, timestamp, custom_stream):
+def write_log(original_stdout, timestamp, custom_stream, log_file_name):
     # Restore the original standard output
     sys.stdout = original_stdout
 
@@ -44,6 +44,7 @@ def write_log(original_stdout, timestamp, custom_stream):
 
     # Write the captured output to a file with a timestamp
     with open(log_file, "a") as f:
+        f.write(f"{log_file_name}\n")
         f.write(f"Execution Timestamp: {timestamp}\n")
         for text in custom_stream.log_buffer:
             f.write(text)
