@@ -55,7 +55,7 @@
             "request": "launch",
             "program": "./apriori.py",
             "console": "integratedTerminal",
-            "args": ["-pt","-f","6milion.txt","-s","250","-k","300", "-ma", "7000000"],
+            "args": ["-pt","-f","6milion.txt","-s","250","-k","300", "-ma", "7000000", "-po"],
             "justMyCode": true
         },
 

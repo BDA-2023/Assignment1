@@ -5,6 +5,7 @@ import cProfile
 import time
 import argparse
 import math
+from customstream import init_custom_stream,write_log
 
 """
 TODO:
@@ -134,6 +135,8 @@ def main():
     fp = FirstPass(file_path)
     profile = cProfile.Profile()
     itemset_counts = defaultdict(int)
+    
+    original_stdout,timestamp,custom_stream = init_custom_stream()
 
     profile.enable()
     fp.process_file(itemset_counts, args.max_articles)
@@ -144,6 +147,8 @@ def main():
     frequents = find_frequent_groups(fp.data, itemset_counts, args.support_threshold, args.max_k)
     profile.disable()
     profile.dump_stats(f"profiles/profile_FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}_k<5.prof")
+
+    write_log(original_stdout,timestamp,custom_stream)
 
 if __name__ == "__main__":
     main()
