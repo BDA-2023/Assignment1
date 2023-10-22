@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "./apriori.py",
             "console": "integratedTerminal",
-            "args": ["-pt"],
+            "args": ["-pt", "-po"],
             "justMyCode": true
         },
         {

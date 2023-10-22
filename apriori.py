@@ -16,7 +16,7 @@ def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10
     result_frequent_sets = []
     frequent_sets_k = [itemset for itemset, count in itemset_counts.items() if count >= support_threshold]
     itemset_counts = defaultdict(int)
-    
+
     k = 1
     while True:
         if k >= max_k:
@@ -73,7 +73,7 @@ def generate_candidate_groups_pruned(authors_from_article, frequent_sets_k, freq
     """
     Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k that are only made from authors from current article.
     """
-    print(f"{math.comb(len(authors_from_article), k)} < {len(frequent_sets_k)}")
+    #print(f"{math.comb(len(authors_from_article), k)} < {len(frequent_sets_k)}")
     #if math.comb(len(authors_from_article), k) < frequent_set_size:
     if (k < 5):
         #print("going in")
@@ -81,11 +81,7 @@ def generate_candidate_groups_pruned(authors_from_article, frequent_sets_k, freq
         # Generate combinations of k-sized groups without them being duplicates (e.g., AB = BA)
         possible_candidates = list(combinations(authors, k))
         possible_candidates = frozenset([frozenset(x) for x in possible_candidates])
-        print(len(possible_candidates))
-
-        # author 1, author 2
-        # author 3
-        # 
+        #print(len(possible_candidates))
 
         pruned_frequent_sets = []
         for candidate_set in possible_candidates:
