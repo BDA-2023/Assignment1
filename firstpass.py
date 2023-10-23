@@ -6,7 +6,7 @@ class FirstPass:
         #self.authors_translation_table = defaultdict(int) # index of authors_counts per author 
         self.data = []
 
-    def process_file(self, itemset_counts, max_articles = 100000):
+    def process_file(self, itemset_counts, min_support, max_articles = 100000):
         with open(self.file_path, 'r') as file:
             i = 0
             for line in file:
@@ -18,6 +18,22 @@ class FirstPass:
                     authors = self.get_authors_from_line(line)
                     self.data.append(authors)
                     self.count_itemsets(itemset_counts, authors)
+        # self.remove_infrequent_authors(itemset_counts, min_support)
+        # itemset_counts = sorted(itemset_counts.items(), key=lambda item: item[1], reverse=True)
+
+    def remove_infrequent_authors(self, itemset_counts, min_support):
+        # Create a list to store authors to be removed
+        authors_to_remove = []
+
+        # Iterate through the itemset_counts dictionary
+        for author, count in itemset_counts.items():
+            if count < min_support:
+                # Add the author to the removal list
+                authors_to_remove.append(author)
+
+        # Remove authors from the itemset_counts dictionary
+        for author in authors_to_remove:
+            del itemset_counts[author]
 
     def get_authors_from_line(self, line):
         authors = line.split(",")
