@@ -15,12 +15,8 @@ TODO:
 
 def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10):
     result_frequent_sets = []
-    frequent_sets_k = [itemset for itemset, count in itemset_counts.items() if count >= support_threshold]#itemset_counts#sorted(itemset_counts.items(), key=lambda item: item[1], reverse=True)
+    frequent_sets_k = itemset_counts
     itemset_counts = defaultdict(int)
-
-    # print(data)
-    # print(frequent_sets_k)
-    # print()
 
     k = 1
     while True:
@@ -110,6 +106,7 @@ def generate_candidate_groups(frequent_sets_k, k):
                 candidates.append(new_candidate)
     return candidates
 
+
 def parseArguments():
     parser = argparse.ArgumentParser(description="An a priori implementation for the dblp dataset")
 
@@ -149,7 +146,7 @@ def main():
     original_stdout,timestamp,custom_stream = init_custom_stream()
 
     profile.enable()
-    fp.process_file(itemset_counts, args.support_threshold, args.max_articles)
+    fp.process_file(itemset_counts, args.support_threshold, args.max_k,  args.max_articles)
     profile.disable()
     profile.dump_stats(f"profiles/profile_FirstPass_{args.max_articles}.prof")
 
