@@ -1,5 +1,6 @@
 from collections import defaultdict
 from itertools import combinations
+import pstats
 from firstpass import FirstPass
 import cProfile
 import time
@@ -14,9 +15,11 @@ TODO:
 
 def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10):
     result_frequent_sets = []
-    frequent_sets_k = [itemset for itemset, count in itemset_counts.items() if count >= support_threshold]
+    frequent_sets_k = [itemset for itemset, count in itemset_counts.items() if count >= support_threshold]#itemset_counts#sorted(itemset_counts.items(), key=lambda item: item[1], reverse=True)
     itemset_counts = defaultdict(int)
-    
+    # print(data)
+    print(frequent_sets_k)
+    # print()
     k = 1
     while True:
         if k >= max_k:
@@ -29,8 +32,8 @@ def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10
         data = count_supports(data, itemset_counts, frequent_sets_k, k)
         # Prune candidates with support below the minimum support threshold
         frequent_sets_k = [itemset for itemset, count in itemset_counts.items() if count >= support_threshold]
+        # print(frequent_sets_k)
         itemset_counts = defaultdict(int)
-
 
         if print_time:
             t1 = time.time()
@@ -60,8 +63,7 @@ def count_supports(data, itemset_counts, frequent_sets_k, k):
             candidates_current_article = [frozenset(authors_from_article)]
         else: 
             candidates_current_article = generate_candidate_groups_pruned(authors_from_article, frequent_sets_k, k)
-
-            
+        
         pruned_data.append(authors_from_article)
 
         for candidate in candidates_current_article:
@@ -139,7 +141,7 @@ def main():
     original_stdout,timestamp,custom_stream = init_custom_stream()
 
     profile.enable()
-    fp.process_file(itemset_counts, args.max_articles)
+    fp.process_file(itemset_counts, args.support_threshold, args.max_articles)
     profile.disable()
     profile.dump_stats(f"profiles/profile_FirstPass_{args.max_articles}.prof")
 
@@ -148,6 +150,8 @@ def main():
     profile.disable()
     log_file_name = f"FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}_k<5"
     profile.dump_stats(f"profiles/profile_{log_file_name}.prof")
+    stats = pstats.Stats(f"profiles/profile_{log_file_name}.prof")
+    stats.strip_dirs().sort_stats("cumulative").print_stats()
 
     write_log(original_stdout,timestamp,custom_stream, log_file_name)
 
