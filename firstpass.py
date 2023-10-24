@@ -1,9 +1,8 @@
-from collections import defaultdict
 
 class FirstPass:
     def __init__(self, file_path):
         self.file_path = file_path
-        #self.authors_translation_table = defaultdict(int) # index of authors_counts per author 
+        #self.authors_translation_table = dict(int) # index of authors_counts per author 
         self.data = []
 
     def process_file(self, itemset_counts, min_support, k, max_articles = 100000):
@@ -18,8 +17,6 @@ class FirstPass:
                     authors = self.get_authors_from_line(line)
                     self.data.append(authors)
                     self.count_itemsets(itemset_counts, authors)
-        itemset_counts = [itemset for itemset, count in itemset_counts.items() if count >= min_support]
-        # itemset_counts = sorted(itemset_counts.items(), key=lambda item: item[1], reverse=True)
 
     def remove_infrequent_authors(self, itemset_counts, min_support):
         # Create a list to store authors to be removed
@@ -47,5 +44,10 @@ class FirstPass:
     """
     def count_itemsets(self, itemset_counts, itemset):
         for item in itemset:
-            itemset_counts[frozenset([item])] += 1
+            item = frozenset([item])
+            if item in itemset_counts:
+                itemset_counts[item] += 1
+            else:
+                itemset_counts[item] = 1
+
 

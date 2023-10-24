@@ -32,6 +32,15 @@
             "justMyCode": true
         },
         {
+            "name": "10000 print_time k=7",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt","-f","10000.txt","-s","5","-k","7"],
+            "justMyCode": true
+        },
+        {
             "name": "10000 print_time max_k=6",
             "type": "python",
             "request": "launch",
@@ -41,12 +50,12 @@
             "justMyCode": true
         },
         {
-            "name": "100000 print_time",
+            "name": "100000 print_time print_iterative",
             "type": "python",
             "request": "launch",
             "program": "./apriori.py",
             "console": "integratedTerminal",
-            "args": ["-pt","-f","100000.txt","-s","10","-k","100"],
+            "args": ["-pt","-pi", "-f","100000.txt","-s","10","-k","100"],
             "justMyCode": true
         },
         {
@@ -56,6 +65,15 @@
             "program": "./apriori.py",
             "console": "integratedTerminal",
             "args": ["-pt","-f","100000.txt","-s","10","-k","100", "-po"],
+            "justMyCode": true
+        },
+        {
+            "name": "100000 print_time print_output s=2",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt","-f","100000.txt","-s","2","-k","3", "-po"],
             "justMyCode": true
         },
         {
