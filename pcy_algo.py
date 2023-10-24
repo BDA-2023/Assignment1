@@ -100,7 +100,7 @@ def main():
 
     # Profile for debugging and timings per function (bottleneck searching)
     profile.enable()
-    fp.process_file(itemset_counts, args.max_articles)
+    fp.process_file(itemset_counts, args.support_threshold, args.max_k, args.max_articles)
     profile.disable()
     profile.dump_stats(f"profiles/profile_PCYFirstPass_{args.max_articles}.prof")
 
