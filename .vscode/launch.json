@@ -67,6 +67,15 @@
             "args": ["-pt","-f","6milion.txt","-s","250","-k","300", "-ma", "7000000", "-po"],
             "justMyCode": true
         },
+        {
+            "name": "6mil print_time s=200",
+            "type": "python",
+            "request": "launch",
+            "program": "./apriori.py",
+            "console": "integratedTerminal",
+            "args": ["-pt","-f","6milion.txt","-s","200","-k","300", "-ma", "7000000", "-po"],
+            "justMyCode": true
+        },
 
     ]
 }
