@@ -23,7 +23,7 @@ def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10
     result_frequent_sets.update(itemset_counts)
 
     k = 1
-    while True:
+    while True: # Loop every k group size until max_k is reached
         if k >= max_k:
             break
         
@@ -44,18 +44,16 @@ def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10
         if print_iterative:
             print(itemset_counts)
 
-    #TODO: ask Maties
+    # Filter via greater_equal_support_threshold function (if true -> put in list)
     result_frequent_sets = list(filter(greater_equal_support_threshold, result_frequent_sets.items()))
     if print_output:
         print(result_frequent_sets)
     return result_frequent_sets
 
 '''
-    Identifies for every group size k its maximum frequency count together with a listing of example groups
-    @param: data, the whole dataset
-    @param: itemset_counts, the occurrences per unique author in the dataset
+    Function to filter out, if item is above the support threshold
+    @param: key_value, the occurrence of a frequent author group
 '''
-#TODO: ask Maties
 def greater_equal_support_threshold(key_value):
     global support_threshold
     return key_value[1] >= support_threshold
@@ -70,7 +68,6 @@ def greater_equal_support_threshold(key_value):
 def count_supports(data, frequent_sets_unfiltered, support_threshold, k):
     pruned_data = []
     itemset_counts = {}
-    print(f"frequent sets size: {len(frequent_sets_unfiltered)}")
     for authors_from_article in data:
         if len(authors_from_article) < k+1:
             continue
