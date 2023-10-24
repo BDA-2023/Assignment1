@@ -134,16 +134,14 @@ def parseArguments():
     parser.add_argument("-pi", "--print_iterative", action="store_true", help="Print the frequents every iteration k")
     parser.add_argument("-po", "--print_output", action="store_true", help="Print the final result")
     parser.add_argument("-f", "--file", type=str, default="1000.txt", help="The file which holds the authors for every article")
-    parser.add_argument("-oc", "--optimized_candidates", action="store_true", help="Use the optimized version of candidates")
     parser.add_argument("-ma", "--max_articles", type=int, default=100000, help="The maximum number of articles read from the current file")
 
     args = parser.parse_args()
-    global print_time, print_iterative, file_path, optimized_candidates, print_output, support_threshold
+    global print_time, print_iterative, file_path, print_output, support_threshold
     print_time = args.print_time
     print_iterative = args.print_iterative
     file_path += args.file
-    optimized_candidates = args.optimized_candidates
-    print_output = args.print_output
+    #print_output = args.print_output
     support_threshold = args.support_threshold
 
     return args
@@ -151,8 +149,7 @@ def parseArguments():
 
 print_time = False
 print_iterative = False
-optimized_candidates = False
-print_output = False
+print_output = True
 file_path = 'txt/'
 support_threshold = 2
 
@@ -172,20 +169,25 @@ def main():
     profile.enable()
     fp.process_file(itemset_counts, args.support_threshold, args.max_k,  args.max_articles)
     profile.disable()
-    profile.dump_stats(f"profiles/profile_FirstPass_{args.max_articles}.prof")
+    try:
+        profile.dump_stats(f"profiles/profile_FirstPass_{args.max_articles}.prof")
 
-    # Profile for debugging and timings per function (bottleneck searching)
-    profile.enable()
-    frequents = find_frequent_groups(fp.data, itemset_counts, args.support_threshold, args.max_k)
-    profile.disable()
-    log_file_name = f"FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}-{timestamp}"
-    profile.dump_stats(f"profiles/profile_{log_file_name}.prof")
+        # Profile for debugging and timings per function (bottleneck searching)
+        profile.enable()
+        frequents = find_frequent_groups(fp.data, itemset_counts, args.support_threshold, args.max_k)
+        profile.disable()
 
-    # Show stats immediately
-    stats = pstats.Stats(f"profiles/profile_{log_file_name}.prof")
-    stats.strip_dirs().sort_stats("cumulative").print_stats()
+        log_file_name = f"FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}-{timestamp}"
+        profile.dump_stats(f"profiles/profile_{log_file_name}.prof")
 
-    write_log(original_stdout,timestamp,custom_stream, log_file_name)
+        # Show stats immediately
+        stats = pstats.Stats(f"profiles/profile_{log_file_name}.prof")
+        stats.strip_dirs().sort_stats("cumulative").print_stats()
+
+        write_log(original_stdout,timestamp,custom_stream, log_file_name)
+    except FileNotFoundError:
+        print("directory logs/ or profiles/ does not exist so logging is disabled")
+
 
 '''
     Script startpoint
