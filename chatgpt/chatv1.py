@@ -10,7 +10,7 @@ def find_frequent_author_groups(data, threshold):
     authors_counts = defaultdict(int)
     frequent_groups = {}  # To store frequent groups and their counts
     k = 1  # Initialize group size -> how many authors published together
-    max_k = 7 # max paired authors in a group to search for
+    max_k = 300 # max paired authors in a group to search for
 
     # Step 2: Count occurrences of individual authors
     for publication in data:
@@ -96,20 +96,21 @@ def prune_infrequent_groups(authors_counts, threshold):
     return new_authors_counts, frequent_groups
 
 # Example usage
-file_path = 'small-xmlparsed.txt'  # Replace with the path to your text file
+file_path = 'txt/xmlparsed.txt'  # Replace with the path to your text file
 fp = FirstPass(file_path)
+itemset_counts = defaultdict(int)
 
 profile = cProfile.Profile()
 profile.enable()
-fp.process_file()
+fp.process_file(itemset_counts,250,300,7000000)
 profile.disable()
-profile.dump_stats("profile_FirstPass_med.prof")
+profile.dump_stats("profile_FirstPass_full.prof")
 
-support_threshold = 2  # threshold of how frequent a author needs to be at min.
+support_threshold = 250  # threshold of how frequent a author needs to be at min.
 profile.enable()
 frequent_groups = find_frequent_author_groups(fp.data, support_threshold)
 profile.disable()
-profile.dump_stats("profile_SecondPass_k4s2_med.prof")
+profile.dump_stats("profile_Versie1_k300s250_full.prof")
 # frequent_groups = find_most_frequent_groups(fp.data)
 # frequent_groups = find_frequent_author_groups(fp.data, support_threshold)
 print(frequent_groups)

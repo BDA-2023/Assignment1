@@ -1,8 +1,5 @@
 import sys
 from datetime import datetime
-
-import contextlib
-import io
 import sys
 
 """
@@ -10,7 +7,7 @@ import sys
     in the logs/ directory
 """
 
-# Define a custom stream to capture the output
+# Define a custom stream to capture the output from the commandline
 class CustomStream:
     def __init__(self, original):
         self.log_buffer = []
@@ -23,6 +20,9 @@ class CustomStream:
     def flush(self):
         pass
 
+''' 
+    Initialize the custom stream
+'''
 def init_custom_stream():
     # Store the original standard output
     original_stdout = sys.stdout
@@ -35,6 +35,13 @@ def init_custom_stream():
 
     return original_stdout,timestamp,custom_stream
 
+''' 
+    Write the current stdout to a log file
+    @param: original_stdout, the original stdout output
+    @param: timestamp, use timestamp in the name to make it unique
+    @param: custom_stream, custom_stream object containing the log buffer
+    @param: log_file_name, the log filename
+'''
 def write_log(original_stdout, timestamp, custom_stream, log_file_name):
     # Restore the original standard output
     sys.stdout = original_stdout

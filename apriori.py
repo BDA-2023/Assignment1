@@ -8,10 +8,16 @@ import math
 from customstream import init_custom_stream,write_log
 
 """
-TODO:
-- should you count more than the support? kinda seems stupid
+    This file contains an implementation of the second pass (aka main step) of the A-priori algorithm
 """
 
+'''
+    Identifies for every group size k its maximum frequency count together with a listing of example groups
+    @param: data, the whole dataset
+    @param: itemset_counts, the occurrences per unique author in the dataset
+    @optional param: support_threshold, the minimum threshold for an group's occurence also known as "s" (default=2)
+    @optional param: max_k, the maximum group size of authors also known as "k" (default=10)
+'''
 def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10):
     result_frequent_sets = {}
     result_frequent_sets.update(itemset_counts)
@@ -24,9 +30,8 @@ def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10
         if print_time:
             t0 = time.time()
         # Count the support for each candidate set
-        # print(f"frequent sets: {len(data)*len(frequent_sets_k)} \t({len(frequent_sets_k)}) \t- pow: {len(data)*pow(k,k)} \t(max {pow(k,k)}) - datalength:{len(data)}")
         data, itemset_counts = count_supports(data, itemset_counts, support_threshold, k)
-        # Prune candidates with support below the minimum support threshold
+        # Update the frequent author groups
         result_frequent_sets.update(itemset_counts)
         if len(itemset_counts) == 0:
             break
@@ -39,21 +44,29 @@ def find_frequent_groups(data, itemset_counts, support_threshold = 2, max_k = 10
         if print_iterative:
             print(itemset_counts)
 
+    #TODO: ask Maties
     result_frequent_sets = list(filter(greater_equal_support_threshold, result_frequent_sets.items()))
     if print_output:
         print(result_frequent_sets)
     return result_frequent_sets
 
+'''
+    Identifies for every group size k its maximum frequency count together with a listing of example groups
+    @param: data, the whole dataset
+    @param: itemset_counts, the occurrences per unique author in the dataset
+'''
+#TODO: ask Maties
 def greater_equal_support_threshold(key_value):
     global support_threshold
     return key_value[1] >= support_threshold
-
-# def filter_itemset_counts(result_frequent_sets, itemset_counts):
-#     filtered_itemset_counts = {}(filter(greater_equal_support_threshold, itemset_counts.items()))
-
-#     result_frequent_sets.update(filtered_itemset_counts)
     
-
+'''
+    Identifies for every group size k its maximum frequency count together with a listing of example groups
+    @param: data, the whole dataset (can be pruned for efficiency)
+    @param: frequent_sets_unfiltered, the occurrences per unique author in the dataset (can be pruned for efficiency)
+    @param: support_threshold, the minimum threshold for an group's occurence also known as "s"
+    @param: max_k, the maximum group size of authors also known as "k"
+'''
 def count_supports(data, frequent_sets_unfiltered, support_threshold, k):
     pruned_data = []
     itemset_counts = {}
@@ -61,8 +74,6 @@ def count_supports(data, frequent_sets_unfiltered, support_threshold, k):
     for authors_from_article in data:
         if len(authors_from_article) < k+1:
             continue
-        # elif len(authors_from_article) == k+1:
-        #     candidates_current_article = [frozenset(authors_from_article)]
         else: 
             candidates_current_article = generate_candidate_groups_with_combinations(authors_from_article, frequent_sets_unfiltered, support_threshold, k)
             pruned_data.append(authors_from_article)
@@ -72,19 +83,16 @@ def count_supports(data, frequent_sets_unfiltered, support_threshold, k):
                 itemset_counts[candidate] += 1
             else:
                 itemset_counts[candidate] = 1
-    # print(f"pruned data length: {len(pruned_data)}")
-    return pruned_data, itemset_counts
+    return pruned_data, itemset_counts # replace data with pruned data for this kth iteration
 
+'''
+    Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k that are only made from authors from current article
+    @param: authors_from_article, current authors from an article
+    @param: frequent_sets_unfiltered, the occurrences per unique author in the dataset (can be pruned for efficiency)
+    @param: support_threshold, the minimum threshold for an group's occurence also known as "s"
+    @param: max_k, the maximum group size of authors also known as "k"
+'''
 def generate_candidate_groups_with_combinations(authors_from_article, frequent_sets_unfiltered, support_threshold, k):
-    """
-    Optimized: Generate candidate groups of size k + 1 by joining frequent groups of size k that are only made from authors from current article.
-    """
-
-    #print(len(possible_candidates))
-    #print(f"possible cand len:{len(possible_candidates)}")
-
-    #print(len(pruned_frequent_sets))
-    #print('-------')
 
     if math.comb(len(authors_from_article), k) < len(frequent_sets_unfiltered):
         authors_list = list(authors_from_article)  # Convert to a list for indexing
@@ -97,11 +105,14 @@ def generate_candidate_groups_with_combinations(authors_from_article, frequent_s
                 pruned_frequent_sets.append(candidate_set)
     else:
         pruned_frequent_sets = [key for key,_ in filter(greater_equal_support_threshold, frequent_sets_unfiltered.items())]
-    #print(f"frequent set size {frequent_set_size}")
     candidates = generate_candidate_groups(pruned_frequent_sets, k)
-
     return candidates
 
+'''
+    Generate candidate groups of size k + 1 by joining frequent groups of size k
+    @param: pruned_frequent_sets, current frequent author groups
+    @param: max_k, the maximum group size of authors also known as "k"
+'''
 def generate_candidate_groups(pruned_frequent_sets, k):
     frequent_set_size = len(pruned_frequent_sets)
     candidates = []
@@ -114,7 +125,9 @@ def generate_candidate_groups(pruned_frequent_sets, k):
                 candidates.append(new_candidate)
     return candidates
 
-
+'''
+    Parse commandline arguments
+'''
 def parseArguments():
     parser = argparse.ArgumentParser(description="An a priori implementation for the dblp dataset")
 
@@ -126,7 +139,6 @@ def parseArguments():
     parser.add_argument("-f", "--file", type=str, default="1000.txt", help="The file which holds the authors for every article")
     parser.add_argument("-oc", "--optimized_candidates", action="store_true", help="Use the optimized version of candidates")
     parser.add_argument("-ma", "--max_articles", type=int, default=100000, help="The maximum number of articles read from the current file")
-
 
     args = parser.parse_args()
     global print_time, print_iterative, file_path, optimized_candidates, print_output, support_threshold
@@ -147,29 +159,39 @@ print_output = False
 file_path = 'txt/'
 support_threshold = 2
 
+'''
+    Main
+'''
 def main():
     args = parseArguments()
     fp = FirstPass(file_path)
     profile = cProfile.Profile()
     itemset_counts = {}
     
-    
+    # Custom stdout logging
     original_stdout,timestamp,custom_stream = init_custom_stream()
 
+    # Profile for debugging and timings per function (bottleneck searching)
     profile.enable()
     fp.process_file(itemset_counts, args.support_threshold, args.max_k,  args.max_articles)
     profile.disable()
     profile.dump_stats(f"profiles/profile_FirstPass_{args.max_articles}.prof")
 
+    # Profile for debugging and timings per function (bottleneck searching)
     profile.enable()
     frequents = find_frequent_groups(fp.data, itemset_counts, args.support_threshold, args.max_k)
     profile.disable()
     log_file_name = f"FindFrequents_{args.file}_{args.max_articles}_k={args.max_k}_s={args.support_threshold}-{timestamp}"
     profile.dump_stats(f"profiles/profile_{log_file_name}.prof")
+
+    # Show stats immediately
     stats = pstats.Stats(f"profiles/profile_{log_file_name}.prof")
     stats.strip_dirs().sort_stats("cumulative").print_stats()
 
     write_log(original_stdout,timestamp,custom_stream, log_file_name)
 
+'''
+    Script startpoint
+'''
 if __name__ == "__main__":
     main()

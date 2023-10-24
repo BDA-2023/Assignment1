@@ -23,8 +23,9 @@ def find_frequent_groups(data, min_support, max_group_size):
         t1 = time.time()
         total = t1-t0
         print(f"Time for k={k}: {total} seconds")
+        if k == max_group_size:
+            break
         k += 1
-
 
     return frequent_sets
 
@@ -48,20 +49,22 @@ def count_supports(data, candidate_sets):
                     item_counts[tuple(candidate_set)] = 1
     return item_counts
 
-file_path = 'small-xmlparsed.txt'  # Replace with the path to your text file
-fp = FirstPass(file_path)
-fp.process_file()
+min_support = 2  # Minimum support count for a group to be considered frequent
+max_group_size = 10  # Maximum group size
+min_group_size = 2  # Minimum group size
 
-min_support = 10  # Minimum support count for a group to be considered frequent
-max_group_size = 300  # Maximum group size
-min_group_size = 3  # Minimum group size
+itemset_counts = defaultdict(int)
+file_path = 'txt/small-xmlparsed.txt'  # Replace with the path to your text file
+fp = FirstPass(file_path)
+fp.process_file(itemset_counts,min_support, max_group_size)
 
 profile = cProfile.Profile()
 profile.enable()
 frequent_groups = find_frequent_groups(fp.data, min_support, max_group_size)
 profile.disable()
-profile.dump_stats("profile_SuperFast_med.prof")
+profile.dump_stats("profile_Versie2_full.prof")
 print(f"Frequent Groups (Size {min_group_size}-{max_group_size}) with Support >= {min_support}:")
+print(frequent_groups)
 for group in frequent_groups:
     if len(group) <= max_group_size and len(group) >= min_group_size:
         print(group)

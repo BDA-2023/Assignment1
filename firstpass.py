@@ -1,15 +1,24 @@
+"""
+    This file contains an implementation of the first pass (aka preprocessing step) for the A-priori algorithm
+"""
 
 class FirstPass:
     def __init__(self, file_path):
         self.file_path = file_path
-        #self.authors_translation_table = dict(int) # index of authors_counts per author 
         self.data = []
 
+    ''' 
+        Read and process dataset file
+        @param: itemset_counts, all the unique authors and their respective occurences
+        @param: min_support, the minimum threshold for an group's occurence also known as "s" (not used in this version of a-priori)
+        @param: k, the maximum group size of authors (not used in this version of a-priori)
+        @optional param: max_articles, the maximum articles to read from the dataset (default=100000)
+    '''
     def process_file(self, itemset_counts, min_support, k, max_articles = 100000):
         with open(self.file_path, 'r') as file:
             i = 0
             for line in file:
-                if i >= max_articles:
+                if i >= max_articles: # max_articles limit
                     return
                 i += 1
                 line = line.strip()
@@ -18,20 +27,10 @@ class FirstPass:
                     self.data.append(authors)
                     self.count_itemsets(itemset_counts, authors)
 
-    def remove_infrequent_authors(self, itemset_counts, min_support):
-        # Create a list to store authors to be removed
-        authors_to_remove = []
-
-        # Iterate through the itemset_counts dictionary
-        for author, count in itemset_counts.items():
-            if count < min_support:
-                # Add the author to the removal list
-                authors_to_remove.append(author)
-
-        # Remove authors from the itemset_counts dictionary
-        for author in authors_to_remove:
-            del itemset_counts[author]
-
+    ''' 
+        Retrieve author from line
+        @param: line, current line in the dataset file
+    '''
     def get_authors_from_line(self, line):
         authors = line.split(",")
         authors = authors[:-1]  # Delete the last empty string because of the trailing comma
@@ -39,6 +38,9 @@ class FirstPass:
         return authors
     
     """
+        Count the occurence of every author in the dataset
+        @param: itemset_counts, all the unique authors and their respective occurences
+        @param: itemset_counts, the authors from a line in the dataset
         pre: author is not mentioned twice because itemset is a set
         post: counts the occurrences of every itemset
     """
@@ -49,5 +51,3 @@ class FirstPass:
                 itemset_counts[item] += 1
             else:
                 itemset_counts[item] = 1
-
-
